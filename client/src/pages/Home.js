@@ -11,9 +11,7 @@ const Home = () => {
 
    useEffect(() => {
       axios.get('http://localhost:3001/posts', {
-         headers: {
-            'x-access-token': localStorage.getItem('token')
-         }
+         headers: { 'x-access-token': localStorage.getItem('token') }
       }).then(res => setPosts(res.data)).catch(err => setError(err));
    }, []);
 

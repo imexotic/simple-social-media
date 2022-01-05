@@ -4,7 +4,6 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const errorhandler = require('errorhandler');
-const jwt = require('jsonwebtoken');
 
 const userRouter = require('./routes/users.js');
 const authRouter = require('./routes/auth.js');
@@ -26,7 +25,7 @@ app.use('/users', userRouter);
 app.use('/posts', postRouter);
 
 
-app.use(errorhandler())
+app.use(errorhandler());
 
 // Initialising the server
 const PORT = process.env.PORT || 3001;

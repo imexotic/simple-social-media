@@ -63,7 +63,7 @@ const login = (req, res, next) => {
 }
 
 module.exports = {
+   isAuth,
    register,
-   login,
-   isAuth
+   login
 }

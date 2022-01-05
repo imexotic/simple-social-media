@@ -23,7 +23,10 @@ const getAllPosts = (req, res, next) => {
 } */
 
 const getPostById = (req, res, next) => {
-   db.query('SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id WHERE posts.id = ?;', [req.params.id], (err, results) => {
+   const query = 'SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id WHERE posts.id = ?';
+   const query_values = [req.params.id];
+   
+   db.query(query, query_values, (err, results) => {
       if (err) next(err);
 
       return res.send(results);
@@ -32,17 +35,32 @@ const getPostById = (req, res, next) => {
 
 const createPost = (req, res, next) => {
    const query = 'INSERT INTO posts (user_id, title, description, createdAt) VALUES (?, ?, ?, ?)';
-   const data = [req.body.user_id, req.body.title, req.body.description, req.body.createdAt];
+   const query_values = [req.body.user_id, req.body.title, req.body.description, req.body.createdAt];
 
-   db.query(query, data, (err, results) => {
+   db.query(query, query_values, (err, results) => {
       if (err) next(err);
 
       return res.send('post created')
    });
 }
 
+const updatePost = (req, res, next) => {
+   const id = req.params.id;
+   const data = req.body;
+
+   const query = 'UPDATE posts SET ? WHERE id = ?';
+   const query_values = [data, id]
+
+   db.query(query, query_values, (err, results) => {
+      if (err) next(err);
+
+      return res.send('post updated')
+   });
+}
+
 module.exports = {
    getAllPosts,
    getPostById,
-   createPost
+   createPost,
+   updatePost
 }

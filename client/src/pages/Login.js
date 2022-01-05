@@ -6,7 +6,7 @@ const Login = () => {
    const [username, setUsername] = useState(null);
    const [password, setPassword] = useState(null);
    const [error, setError] = useState(null);
-   const auth = useAuth();
+   const [auth, authError, authLoading] = useAuth();
 
    console.log(auth);
 
@@ -20,7 +20,6 @@ const Login = () => {
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("user", JSON.stringify(res.data.user));
          }).catch(err => setError(err));
-
    }
 
    const userAuthenicated = (e) => {

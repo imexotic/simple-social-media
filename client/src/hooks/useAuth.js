@@ -3,34 +3,38 @@ import axios from 'axios';
 
 const useAuth = (setLoading, setError) => {
    const [auth, setAuth] = useState(null);
+   const [authLoading, setAuthLoading] = useState(false);
+   const [authError, setAuthError] = useState(null);
 
    useEffect(() => {
+      setAuthLoading(true);
+
       const checkAuth = async () => {
-         setLoading(true);
+
          try {
             const response = await axios.get('http://localhost:3001/isAuth', {
                headers: { "x-access-token": localStorage.getItem("token") }
             });
             const data = await response.data;
-      
+
             if (data.auth) {
                const user = JSON.parse(localStorage.getItem('user'));
                
                return setAuth(user);
             };
-   
             return data.auth;
          } catch(err) {
-            setError(err);
+            setAuthError(err);
          } finally {
-            setLoading(false);
+            setAuthLoading(false);
          }
       }
 
       checkAuth();
    }, []);
+   
 
-   return auth;
+   return [auth, authLoading, authError];
 }
 
 export default useAuth;
