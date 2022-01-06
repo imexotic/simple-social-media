@@ -10,28 +10,30 @@ const getAllPosts = (req, res, next) => {
    });
 }
 
-/* const getAllPosts = (req, res, next) => {
-   const query = 'SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id ORDER BY posts.createdAt DESC;';
-
-   db.query(query, (err, results) => {
-      if (err) next(err);
-
-      console.log(results);
-
-      return res.send(results);
-   })
-} */
 
 const getPostById = (req, res, next) => {
+   const id = req.params.id;
+
    const query = 'SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id WHERE posts.id = ?';
-   const query_values = [req.params.id];
-   
+   const query_values = [id];
+
    db.query(query, query_values, (err, results) => {
       if (err) next(err);
 
       return res.send(results);
    });
 }
+
+const getSpecificPost = (req, res, next) => {
+   const title = req.query;
+
+   const query = "SELECT * FROM posts WHERE title LIKE '%?%'";
+   const query_values = [title];
+
+
+   res.send('hello')
+}
+
 
 const createPost = (req, res, next) => {
    const query = 'INSERT INTO posts (user_id, title, description, createdAt) VALUES (?, ?, ?, ?)';
@@ -40,13 +42,16 @@ const createPost = (req, res, next) => {
    db.query(query, query_values, (err, results) => {
       if (err) next(err);
 
-      return res.send('post created')
+      return res.send('Post created')
    });
 }
+
 
 const updatePost = (req, res, next) => {
    const id = req.params.id;
    const data = req.body;
+
+   console.log(id, data);
 
    const query = 'UPDATE posts SET ? WHERE id = ?';
    const query_values = [data, id]
@@ -54,13 +59,30 @@ const updatePost = (req, res, next) => {
    db.query(query, query_values, (err, results) => {
       if (err) next(err);
 
-      return res.send('post updated')
+      return res.send('Post updated');
    });
 }
+
+
+const removePost = (req, res, next) => {
+   const id = req.params.id;
+   
+   const query = 'DELETE FROM posts WHERE id = ?';
+   const query_values = [id];
+
+   db.query(query, query_values, (err, results) => { 
+      if (err) next(err);
+
+      return res.send('Post deleted');
+   });
+}
+
 
 module.exports = {
    getAllPosts,
    getPostById,
+   getSpecificPost,
    createPost,
-   updatePost
+   updatePost,
+   removePost
 }

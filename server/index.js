@@ -7,15 +7,13 @@ const errorhandler = require('errorhandler');
 
 const userRouter = require('./routes/users.js');
 const authRouter = require('./routes/auth.js');
-const postRouter = require('./routes/post.js')
+const postRouter = require('./routes/post.js');
 
 const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(express.urlencoded({
-   extended: true
-}));
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.use(cors());
 

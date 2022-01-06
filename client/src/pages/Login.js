@@ -1,36 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import useAuth from '../hooks/useAuth';
+
+import axiosInstance from '../config/axios';
+
 
 const Login = () => {
-   const [username, setUsername] = useState(null);
-   const [password, setPassword] = useState(null);
+   const [username, setUsername] = useState();
+   const [password, setPassword] = useState();
    const [error, setError] = useState(null);
-   const [auth, authError, authLoading] = useAuth();
 
-   console.log(auth);
 
    const handleLogin = (e) => {
       e.preventDefault();
 
-      return axios.post('http://localhost:3001/login', { username, password })
+      const loginData = {
+         username, password
+      }
+
+      return axiosInstance.post('/login', loginData)
          .then(res => {
             if (!res.data.auth) return;
-            
-            localStorage.setItem("token", res.data.token);
-            localStorage.setItem("user", JSON.stringify(res.data.user));
+
+            const { token, user } = res.data;
+
+            const userData = {
+               token: token,
+               user: user
+            }
+
+            return localStorage.setItem("userData", JSON.stringify(userData));
          }).catch(err => setError(err));
    }
 
    const userAuthenicated = (e) => {
       e.preventDefault();
 
-      axios.get('http://localhost:3001/isAuth', {
-         headers: {
-            "x-access-token": localStorage.getItem("token")
-         }
-      }).then(res => console.log(res)).catch(err => setError(err));
+      return axiosInstance.get('/isAuth')
+         .then(res => console.log(res)).catch(err => setError(err));
    }
+
+   if (error) return <div>Error occured</div>;
 
    return (
       <div className='container'>

@@ -7,20 +7,21 @@ const isAuth = (req, res, next) => {
 }
 
 const register = (req, res, next) => {
-   const { username, password } = req.body;
+   const { username, password, email } = req.body;
 
-   bcrypt.hash(password, 10).then(hash => {
-      const query = 'INSERT INTO users (username, password) VALUES (?, ?)';
-      const data = [username, hash];
+   bcrypt.hash(password, 10).then(hashedPassword => {
+      const query = 'INSERT INTO users (username, password, email) VALUES (?, ?, ?)';
+      const data = [username, hashedPassword, email];
 
       db.query(query, data, (err, results) => {
          return res.json({
             auth: true,
-            msg: `Affected rows: 1`
+            msg: `Successfully registered!`
          });
       });
    });
 }
+
 
 const login = (req, res, next) => {
    const { username, password } = req.body;
@@ -32,14 +33,16 @@ const login = (req, res, next) => {
       if (err) next(err);
 
       if (results.length) {
-         const { id, password: dbPassword } = results[0];
+         const { id, password: dbPassword, email } = results[0];
 
          bcrypt.compare(password, dbPassword).then(match => {
-            if (!match) return res.json({auth: false, msg: 'Wrong username and password combination!'});
+            if (!match) return res.json({
+               auth: false, msg: 'Wrong username and password combination!'
+            });
 
 
             // Creating token based on id
-            const token = jwt.sign({id}, process.env.JWT_SECRET_KEY, {
+            const token = jwt.sign({ id }, process.env.JWT_SECRET_KEY, {
                expiresIn: 1000
             });
 
@@ -47,20 +50,17 @@ const login = (req, res, next) => {
                auth: true,
                msg: 'Successfuly logged in!',
                token: token,
-               user: { 
-                  id,
-                  username 
-               }
+               user: { id, username, email }
             });
          });
       } else {
          return res.json({
-            auth: false,
-            msg: 'User does not exist!'
+            auth: false, msg: 'User does not exist!'
          });
       }
    });
 }
+
 
 module.exports = {
    isAuth,
